@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Guia Rápido: React Context API
 
-## Getting Started
+## O que é o Context no React?
 
-First, run the development server:
+O Context é uma funcionalidade do React que simplifica a propagação de dados através da árvore de componentes, permitindo o compartilhamento de informações sem a necessidade de passar manualmente props entre cada componente.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Como Usar o Context
+
+### Configuração Inicial
+
+1. Instale as dependências do projeto:
+
+```
+bash
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. Crie um arquivo para o seu contexto (por exemplo, `ContextContainer.tsx`):
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+jsx
+import { createContext, ReactNode, useState } from "react";
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+type CountContextProps = {
+  onlineCount: number;
+  setOnlineCount: (value: number) => void;
+};
 
-## Learn More
+export const CountContext = createContext<CountContextProps | null>(null);
 
-To learn more about Next.js, take a look at the following resources:
+type CountContextComponentProps = {
+  children: ReactNode;
+};
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+export const CountContextComponent = ({ children }: CountContextComponentProps) => {
+  const [onlineCount, setOnlineCount] = useState<number>(2);
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+  return (
+    <CountContext.Provider value={{ onlineCount, setOnlineCount }}>
+      {children}
+    </CountContext.Provider>
+  );
+};
+```
 
-## Deploy on Vercel
+### Consumindo o Context
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Em qualquer componente que deseja consumir o contexto, utilize o hook `useContext`:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+```
+jsx
+import { useContext } from "react";
+import { CountContext } from "@/app/context/ContextContainer";
+
+const MeuComponente = () => {
+  const countContext = useContext(CountContext);
+
+  // Exemplo de como utilizar o contexto
+  const handleBanAll = () => {
+    countContext?.setOnlineCount(0);
+  };
+
+  // Outras operações com o contexto...
+};
+```
+
+## Resumo
+
+O React Context é uma ferramenta poderosa para gerenciar o estado global em sua aplicação, eliminando a necessidade de passar props manualmente. Ao criar e consumir um contexto, você pode compartilhar dados de forma eficiente em toda a sua aplicação.
+
+Espero que este guia seja útil para entender e começar a usar o React Context! 🚀
